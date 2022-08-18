@@ -46,11 +46,6 @@ struct vlan_hdr {
 	uint16_t proto;
 };
 
-struct packet {
-	void *buffer;
-	unsigned int len;
-};
-
 struct dns_header {
 	uint16_t id;
 	uint16_t flags;
@@ -400,6 +395,8 @@ int qosify_dns_init(void)
 	    qosify_run_cmd("ip link set dev ifb-dns up", false) ||
 	    qosify_open_dns_socket())
 		return -1;
+
+	qosify_set_dnstap_cb(qosify_dns_data_cb);
 
 	return 0;
 }

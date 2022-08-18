@@ -69,6 +69,11 @@ struct qosify_map_entry {
 	struct qosify_map_data data;
 };
 
+struct packet {
+	void *buffer;
+	unsigned int len;
+};
+
 
 extern int qosify_map_timeout;
 extern int qosify_active_timeout;
@@ -114,5 +119,8 @@ int qosify_ubus_init(void);
 void qosify_ubus_stop(void);
 int qosify_ubus_check_interface(const char *name, char *ifname, int ifname_len);
 void qosify_ubus_update_bridger(bool shutdown);
+
+void qosify_dnstap_set_config(struct blob_attr *dtap_sock, struct blob_attr *dtap_usr);
+void qosify_set_dnstap_cb(void (*f)(struct packet *) cb);
 
 #endif

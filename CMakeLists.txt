@@ -15,9 +15,21 @@ IF (NOT DEFINED LIBNL_LIBS)
 	ENDIF()
 ENDIF()
 
+add_custom_command(
+  OUTPUT ${PROJECT_SOURCE_DIR}/dnstap.pb-c.c
+  DEPENDS ${PROJECT_SOURCE_DIR}/dnstap.proto
+  COMMAND protoc-c --c_out=${PROJECT_SOURCE_DIR} --proto_path=${PROJECT_SOURCE_DIR} ${PROJECT_SOURCE_DIR}/dnstap.proto
+  )
+
+add_custom_target(DNSTAP ALL
+  DEPENDS ${PROJECT_SOURCE_DIR}/dnstap.pb-c.c
+  )
+
 find_library(bpf NAMES bpf)
-ADD_EXECUTABLE(qosify main.c loader.c map.c ubus.c interface.c dns.c)
-TARGET_LINK_LIBRARIES(qosify ${bpf} ubox ubus ${LIBNL_LIBS})
+find_library(protobuf-c NAMES protobuf-c)
+find_library(fstrm NAMES fstrm)
+ADD_EXECUTABLE(qosify main.c loader.c map.c ubus.c interface.c dns.c dnstap.pb-c.c)
+TARGET_LINK_LIBRARIES(qosify ${bpf} ubox ubus ${fstrm} ${protobuf-c} ${LIBNL_LIBS})
 
 INSTALL(TARGETS qosify
 	RUNTIME DESTINATION ${CMAKE_INSTALL_SBINDIR}

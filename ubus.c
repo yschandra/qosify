@@ -130,6 +130,8 @@ enum {
 	CL_CONFIG_DSCP_UDP,
 	CL_CONFIG_DSCP_TCP,
 	CL_CONFIG_DSCP_ICMP,
+	CL_CONFIG_DNSTAP_SOCKET,
+	CL_CONFIG_DNSTAP_USER,
 	CL_CONFIG_INTERFACES,
 	CL_CONFIG_DEVICES,
 	CL_CONFIG_CLASSES,
@@ -143,6 +145,8 @@ static const struct blobmsg_policy qosify_config_policy[__CL_CONFIG_MAX] = {
 	[CL_CONFIG_DSCP_UDP] = { "dscp_default_udp", BLOBMSG_TYPE_STRING },
 	[CL_CONFIG_DSCP_TCP] = { "dscp_default_tcp", BLOBMSG_TYPE_STRING },
 	[CL_CONFIG_DSCP_ICMP] = { "dscp_icmp", BLOBMSG_TYPE_STRING },
+	[CL_CONFIG_DNSTAP_SOCKET] = { "dnstap_socket", BLOBMSG_TYPE_STRING },
+	[CL_CONFIG_DNSTAP_USER] = { "dnstap_user", BLOBMSG_TYPE_STRING },
 	[CL_CONFIG_INTERFACES] = { "interfaces", BLOBMSG_TYPE_TABLE },
 	[CL_CONFIG_DEVICES] = { "devices", BLOBMSG_TYPE_TABLE },
 	[CL_CONFIG_CLASSES] = { "classes", BLOBMSG_TYPE_TABLE },
@@ -195,6 +199,8 @@ qosify_ubus_config(struct ubus_context *ctx, struct ubus_object *obj,
 	qosify_iface_config_update(tb[CL_CONFIG_INTERFACES], tb[CL_CONFIG_DEVICES]);
 
 	qosify_iface_check();
+
+	qosify_dnstap_set_config(tb[CL_CONFIG_DNSTAP_SOCKET], tb[CL_CONFIG_DNSTAP_USER]);
 
 	return 0;
 }
