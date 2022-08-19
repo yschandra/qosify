@@ -120,7 +120,8 @@ void qosify_ubus_stop(void);
 int qosify_ubus_check_interface(const char *name, char *ifname, int ifname_len);
 void qosify_ubus_update_bridger(bool shutdown);
 
+int qosify_init_dnstap_socket(void);
 void qosify_dnstap_set_config(struct blob_attr *dtap_sock, struct blob_attr *dtap_usr);
-void qosify_set_dnstap_cb(void (*f)(struct packet *) cb);
+void qosify_set_dnstap_cb(void (*cb)(struct packet *));
 
 #endif

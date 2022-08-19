@@ -28,7 +28,7 @@ add_custom_target(DNSTAP ALL
 find_library(bpf NAMES bpf)
 find_library(protobuf-c NAMES protobuf-c)
 find_library(fstrm NAMES fstrm)
-ADD_EXECUTABLE(qosify main.c loader.c map.c ubus.c interface.c dns.c dnstap.pb-c.c)
+ADD_EXECUTABLE(qosify main.c loader.c map.c ubus.c interface.c dns.c dnstap.c dsock.c dnstap.pb-c.c)
 TARGET_LINK_LIBRARIES(qosify ${bpf} ubox ubus ${fstrm} ${protobuf-c} ${LIBNL_LIBS})
 
 INSTALL(TARGETS qosify

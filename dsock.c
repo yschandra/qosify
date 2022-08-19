@@ -21,15 +21,17 @@
 
 #include <fstrm.h>
 
+#include "qosify.h"
+
 #include "dnstap.pb-c.h"
 
-typedef void (*dns_pkt_cb)(struct packet *) dns_pkt_cb_t;
+typedef void (*dns_pkt_cb_t)(struct packet *);
 
 struct dsock_state {
 	int sfd;
 	const char *sock_path;
 	const char *sock_user;
-	fstrm_reader *sock_reader;
+	struct fstrm_reader *sock_reader;
 	dns_pkt_cb_t dns_pkt_cb;
 };
 
@@ -65,7 +67,7 @@ dsock_open(void *obj)
 
 	if (bind(sfd, (struct sockaddr *)&usock, sizeof(usock))) {
 		ULOG_ERR("failed to bind unix socket to %s: %s\n",
-			 sock_path,
+			 ctx->sock_path,
 			 strerror(errno));
 		goto error;
 	}
@@ -99,7 +101,7 @@ dsock_close(void *obj)
 {
 	struct dsock_state *ctx = (struct dsock_state *)obj;
 	if (ctx->sfd > 0) {
-		close(sfd);
+		close(ctx->sfd);
 		ctx->sfd = -1;
 	}
 	return fstrm_res_success;
@@ -176,7 +178,7 @@ qosify_close_dnstap_socket(void)
 void
 qosify_read_dnstap_socket(void)
 {
-	void *data;
+	const uint8_t *data;
 	size_t size;
 	fstrm_res result;
 	Dnstap__Dnstap *dtap_data = NULL;
@@ -192,9 +194,10 @@ qosify_read_dnstap_socket(void)
 			dtap_data = dnstap__dnstap__unpack(NULL, size, data);
 
 			if (dtap_data != NULL) {
-				if (dtap_data->message->type == DNSTAP__MESSAGE__TYPE__RESOLVER_RESPONSE) {
-					pkt.buffer = dtap_data->message->response_message->data;
-					pkt.len = dtap_data->message->response_message->len;
+				//if (dtap_data->message->type == DNSTAP__MESSAGE__TYPE__RESOLVER_RESPONSE) {
+				if (dtap_data->message->type == DNSTAP__MESSAGE__TYPE__FORWARDER_RESPONSE) {
+					pkt.buffer = dtap_data->message->response_message.data;
+					pkt.len = dtap_data->message->response_message.len;
 					if (dsock_ctx.dns_pkt_cb != NULL)
 						dsock_ctx.dns_pkt_cb(&pkt);
 				}

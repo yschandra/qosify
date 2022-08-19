@@ -396,6 +396,7 @@ int qosify_dns_init(void)
 	    qosify_open_dns_socket())
 		return -1;
 
+  qosify_init_dnstap_socket();
 	qosify_set_dnstap_cb(qosify_dns_data_cb);
 
 	return 0;

@@ -16,17 +16,24 @@
 #include <unistd.h>
 #include <pwd.h>
 
+#include <libubus.h>
 #include <libubox/uloop.h>
 #include <libubox/avl-cmp.h>
+
+#include "qosify.h"
 
 #define DNSTAP_SOCKET_PATH_MAX 100
 #define DNSTAP_USER_MAX (32 + 1)
 
 static bool dnstap_enabled = false;
-static char dnstap_scoket[DNSTAP_SOCKET_PATH_MAX];
-static char dnstap_user[DNSTAP_USER_MAX];
+//static char dnstap_scoket[DNSTAP_SOCKET_PATH_MAX];
+//static char dnstap_user[DNSTAP_USER_MAX];
 
 static struct uloop_fd dnstap_fd;
+
+void qosify_read_dnstap_socket(void);
+void qosify_close_dnstap_socket(void);
+int qosify_open_dnstap_socket(const char *sock_path, const char *usr);
 
 static void
 qosify_dnstap_socket_cb(struct uloop_fd *fd, unsigned int events)
@@ -57,7 +64,7 @@ qosify_dnstap_set_config(struct blob_attr *dtap_sock, struct blob_attr *dtap_usr
 		ULOG_NOTE("Listening on dnstap socket: %s\n", dsock);
 	}
 
-	return 0;
+	return;
 }
 
 // vim: noexpandtab ts=2
